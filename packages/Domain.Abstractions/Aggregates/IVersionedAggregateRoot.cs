@@ -1,7 +1,6 @@
 using System;
-using Damascus.Domain.Abstractions;
 
-namespace Damascus.Persistence.Abstractions.OptimisticLocking
+namespace Damascus.Domain.Abstractions
 {
     public interface IVersionedAggregateRoot<TIdentifier>
         : IAggregateRoot<TIdentifier>

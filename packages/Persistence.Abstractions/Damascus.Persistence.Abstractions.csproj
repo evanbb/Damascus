@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Damascus.Domain.Abstractions/Damascus.Domain.Abstractions.csproj"></ProjectReference>
+    <ProjectReference Include="../Domain.Abstractions/Damascus.Domain.Abstractions.csproj"></ProjectReference>
   </ItemGroup>
 
 </Project>

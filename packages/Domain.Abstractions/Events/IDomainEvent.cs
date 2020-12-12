@@ -1,4 +1,4 @@
-namespace Damascus.Domain.Abstractions.Events
+namespace Damascus.Domain.Abstractions
 {
     public interface IDomainEvent
     {

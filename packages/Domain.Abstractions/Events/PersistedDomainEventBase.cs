@@ -1,6 +1,6 @@
 using System;
 
-namespace Damascus.Domain.Abstractions.Events
+namespace Damascus.Domain.Abstractions
 {
     public abstract class PersistedDomainEventBase<TIdentifier> : IPersistedDomainEvent<TIdentifier>
         where TIdentifier : IEquatable<TIdentifier>

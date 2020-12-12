@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Damascus.Domain.Abstractions;
 
 namespace Damascus.Persistence.Abstractions.OptimisticLocking
 {

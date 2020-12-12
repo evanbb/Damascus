@@ -1,6 +1,6 @@
 using System;
 
-namespace Damascus.Domain.Abstractions.Events
+namespace Damascus.Domain.Abstractions
 {
     public interface IPersistedDomainEvent<TIdentifier> : IDomainEvent
         where TIdentifier : IEquatable<TIdentifier>
