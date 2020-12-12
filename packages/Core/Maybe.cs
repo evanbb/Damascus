@@ -44,6 +44,18 @@ namespace Damascus.Core
         private bool _equals(Maybe<T> other) => !_hasValue
             ? !other.HasValue
             : other.HasValue && other.Value.Equals(_value);
+
+        public static bool operator ==(Maybe<T> first, Maybe<T> second) => first.Equals(second);
+        public static bool operator !=(Maybe<T> first, Maybe<T> second) => !first.Equals(second);
+
+        public static bool operator ==(Maybe<T> first, T second) => first.Equals(second);
+        public static bool operator !=(Maybe<T> first, T second) => !first.Equals(second);
+
+        public static bool operator ==(T first, Maybe<T> second) => second.Equals(first);
+        public static bool operator !=(T first, Maybe<T> second) => !second.Equals(first);
+
+        public static implicit operator T(Maybe<T> maybe) => maybe.Value;
+        public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
     }
 
     public static class MaybeExtensions
