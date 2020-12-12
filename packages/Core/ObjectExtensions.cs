@@ -1,3 +1,4 @@
+using Microsoft;
 using System;
 
 namespace Damascus.Core
@@ -25,6 +26,26 @@ namespace Damascus.Core
                     c.Item2(obj);
                 }
             }
+        }
+
+        public static Maybe<T> ToMaybe<T>(this object obj)
+        {
+            if (obj is Maybe<T>)
+            {
+                return (Maybe<T>)obj;
+            }
+
+            if (obj is T)
+            {
+                return new Maybe<T>((T)obj);
+            }
+
+            return Maybe<T>.Nothing;
+        }
+
+        public static bool IsNotNull(this object obj)
+        {
+            return !(obj is null);
         }
     }
 }
