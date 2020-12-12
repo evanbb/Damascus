@@ -1,3 +1,4 @@
+using System;
 using Damascus.Domain.Abstractions;
 
 namespace Damascus.Example.Domain

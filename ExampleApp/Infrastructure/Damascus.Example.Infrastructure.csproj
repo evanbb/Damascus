@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../packages/Persistence.Abstractions/Damascus.Persistence.Abstractions.csproj" />
+    <ProjectReference Include="../Domain/Damascus.Example.Domain.csproj" />
   </ItemGroup>
 
 </Project>
