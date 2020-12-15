@@ -1,6 +1,6 @@
 namespace Damascus.Example.Infrastructure
 {
-    // public class RamCommandRepository : IExampleAggregateRootCommandRepository
+    // public class RamCommandRepository : IWidgetCommandRepository
     // {
 
     // }

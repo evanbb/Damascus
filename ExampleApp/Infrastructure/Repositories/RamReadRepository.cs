@@ -1,6 +1,6 @@
 namespace Damascus.Example.Infrastructure
 {
-    // public class RamReadRepository : IExampleAggregateRootReadRepository
+    // public class RamReadRepository : IWidgetReadRepository
     // {
 
     // }

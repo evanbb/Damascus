@@ -43,6 +43,11 @@ namespace Damascus.Core
             return Maybe<T>.Nothing;
         }
 
+        public static bool IsNull(this object obj)
+        {
+            return (obj is null);
+        }
+
         public static bool IsNotNull(this object obj)
         {
             return !(obj is null);

@@ -5,9 +5,13 @@ namespace Damascus.Core
 {
     public static class IEnumerableExtensions
     {
-        public static bool NotEmpty<T>(this IEnumerable<T> enumerable)
+        public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
         {
-            return !(enumerable is null) && enumerable.Any();
+            return enumerable is null || !enumerable.Any();
+        }
+        public static bool IsNotEmpty<T>(this IEnumerable<T> enumerable)
+        {
+            return !enumerable.IsEmpty();
         }
     }
 }

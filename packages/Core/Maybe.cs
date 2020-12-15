@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Damascus.Core
 {
-    public struct Maybe<T>
+    public struct Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>
     {
         public static readonly Maybe<T> Nothing;
 
@@ -37,13 +37,23 @@ namespace Damascus.Core
             return false;
         }
 
-        public override int GetHashCode() => _hasValue
-            ? _value.GetHashCode()
-            : 0;
+        public bool Equals(Maybe<T> maybe)
+        {
+            return _equals(maybe);
+        }
+
+        public bool Equals(T value)
+        {
+            return _equals(new Maybe<T>(value));
+        }
 
         private bool _equals(Maybe<T> other) => !_hasValue
             ? !other.HasValue
             : other.HasValue && other.Value.Equals(_value);
+
+        public override int GetHashCode() => _hasValue
+            ? _value.GetHashCode()
+            : 0;
 
         public static bool operator ==(Maybe<T> first, Maybe<T> second) => first.Equals(second);
         public static bool operator !=(Maybe<T> first, Maybe<T> second) => !first.Equals(second);

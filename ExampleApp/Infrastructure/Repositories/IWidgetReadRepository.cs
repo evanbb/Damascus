@@ -4,8 +4,8 @@ using Damascus.Persistence.Abstractions.Cqrs;
 
 namespace Damascus.Example.Infrastructure
 {
-    public interface IExampleAggregateRootCommandRepository :
-        ICommandRepository<Guid, ExampleAggregateRoot>
+    public interface IWidgetReadRepository :
+        IQueryRepository<Guid, object>
     {
 
     }
