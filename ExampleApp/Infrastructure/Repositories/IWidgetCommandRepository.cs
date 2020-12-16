@@ -1,4 +1,5 @@
 using System;
+using Damascus.Core;
 using Damascus.Example.Domain;
 using Damascus.Persistence.Abstractions.Cqrs;
 

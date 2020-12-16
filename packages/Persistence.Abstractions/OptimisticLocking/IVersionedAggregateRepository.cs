@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Damascus.Core;
 using Damascus.Domain.Abstractions;
 
 namespace Damascus.Persistence.Abstractions.OptimisticLocking
@@ -8,7 +9,7 @@ namespace Damascus.Persistence.Abstractions.OptimisticLocking
         where TIdentifier : IEquatable<TIdentifier>
         where TAggregate : class, IVersionedAggregateRoot<TIdentifier>
     {
-        Task<TAggregate> FindAsync(TIdentifier id);
+        Task<Maybe<TAggregate>> FindAsync(TIdentifier id);
         Task CommitAsync(TAggregate aggregate);
     }
 }
