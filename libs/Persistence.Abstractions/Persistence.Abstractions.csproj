@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Damascus.Persistence.Abstractions</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain.Abstractions\Domain.Abstractions.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+</Project>
