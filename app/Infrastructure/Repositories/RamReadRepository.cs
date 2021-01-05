@@ -25,7 +25,7 @@ namespace Damascus.Example.Infrastructure
         {
             var snapshotEvent = theEvent as WidgetSnapshotEvent;
 
-            if (snapshotEvent.IsNull())
+            if (snapshotEvent is null)
             {
                 return;
             }

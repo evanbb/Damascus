@@ -23,7 +23,7 @@ namespace Damascus.Example.Domain
             }
             catch(ArgumentException dupes)
             {
-                throw new InvalidOperationException("All gears must be unique");
+                throw new InvalidOperationException("All gears must be unique", dupes);
             }
         }
 

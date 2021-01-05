@@ -38,12 +38,9 @@ namespace Damascus.Example.Api
         {
             var result = await _queryRepo.FindAsync(id);
 
-            if (result.IsNull())
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return result.HasValue
+                ? Ok(result.Value)
+                : NotFound();
         }
     }
 }

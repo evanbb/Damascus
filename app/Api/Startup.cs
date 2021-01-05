@@ -8,6 +8,8 @@ using Damascus.Example.Infrastructure;
 using Damascus.Http;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using Damascus.Domain.Abstractions;
 
 namespace Damascus.Example.Api
 {
@@ -38,7 +40,19 @@ namespace Damascus.Example.Api
                 {
                     svc.GetRequiredService<IWidgetReadRepository>()
                 }));
-            services.AddSingleton<IMessageBus, RamMessageBus>();
+            services.AddSingleton<IMessageBus, RamMessageBus>(ctx =>
+            {
+                return new RamMessageBus(new Dictionary<string, IEnumerable<Action<Damascus.Domain.Abstractions.IDomainEvent>>>
+                {
+                    {
+                        typeof(WidgetSnapshotEvent).Name,
+                        new Action<IDomainEvent>[]
+                        {
+                            evt => ctx.GetRequiredService<RamReadRepository>().Handle(evt)
+                        }
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

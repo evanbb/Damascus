@@ -2,14 +2,17 @@ using Damascus.Core;
 using Damascus.Domain.Abstractions;
 using Damascus.Example.Domain;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using Damascus.Example.Api;
 
 namespace Damascus.Example.Infrastructure
 {
     public class RamCommandRepository : IWidgetCommandRepository
     {
-        private IDictionary<Guid, Widget> _repo = new Dictionary<Guid, Widget>();
+        private ConcurrentDictionary<Guid, Widget> _repo = new ConcurrentDictionary<Guid, Widget>();
         private readonly IReadOnlyCollection<IHandle<IDomainEvent>> _eventHandlers;
 
         public RamCommandRepository(IReadOnlyCollection<IHandle<IDomainEvent>> eventHandlers)
@@ -31,6 +34,11 @@ namespace Damascus.Example.Infrastructure
             _repo[aggregate.Id] = aggregate;
 
             var events = aggregate.FlushEvents();
+
+            events = events.Concat(new[]
+            {
+                new WidgetSnapshotEvent(aggregate)
+            });
 
             foreach (var handler in _eventHandlers)
             {
