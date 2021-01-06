@@ -17,17 +17,17 @@ namespace Damascus.Example.Api
 
         public static Domain.Motor ToDomain(this IEnumerable<Contracts.Gear> gears)
         {
-            return new Domain.Motor(gears.Select(g =>
-                new Domain.Gear(
-                    g.Teeth,
-                    new Domain.Measurement(
-                        Enum.IsDefined(typeof(Domain.UnitType), g.RadiusUnitType)
-                            ? Enum.Parse<Domain.UnitType>(g.RadiusUnitType)
+            return new Domain.Motor(gears.Select(g => g.ToDomain()));
+        }
+
+        public static Domain.Gear ToDomain(this Contracts.Gear gear)
+        {
+            return new Domain.Gear(gear.Teeth, new Domain.Measurement(
+                        Enum.IsDefined(typeof(Domain.UnitType), gear.RadiusUnitType)
+                            ? Enum.Parse<Domain.UnitType>(gear.RadiusUnitType)
                             : Domain.UnitType.Unspecified,
-                        g.Radius
-                    )
-                )
-            ));
+                        gear.Radius
+                    ));
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Damascus.Example.Api
         [HttpGet]
         public async Task<IActionResult> GetWidgets()
         {
-            return Ok(_queryRepo.SearchAsync());
+            return Ok(await _queryRepo.SearchAsync());
         }
 
         [HttpGet("{id:Guid}")]
@@ -60,6 +60,40 @@ namespace Damascus.Example.Api
             }
 
             result.Value.UpdateDescription(description);
+
+            await _commandRepo.CommitAsync(result.Value);
+
+            return Accepted();
+        }
+
+        [HttpPost("{id:Guid}/gears/{index:int}")]
+        public async Task<IActionResult> AddGear(Guid id, int index, [FromBody] Gear gear)
+        {
+            var result = await _commandRepo.FindAsync(id);
+
+            if (!result.HasValue)
+            {
+                return NotFound();
+            }
+
+            result.Value.AddGearToMotor(gear.ToDomain(), index);
+
+            await _commandRepo.CommitAsync(result.Value);
+
+            return Accepted();
+        }
+
+        [HttpPost("{id:Guid}/gears/{index:int}/swaps/{swapWith:int}")]
+        public async Task<IActionResult> SwapGear(Guid id, int index, int swapWith)
+        {
+            var result = await _commandRepo.FindAsync(id);
+
+            if (!result.HasValue)
+            {
+                return NotFound();
+            }
+
+            result.Value.SwapGears(index, swapWith);
 
             await _commandRepo.CommitAsync(result.Value);
 

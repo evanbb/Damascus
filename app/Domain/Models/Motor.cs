@@ -23,6 +23,12 @@ namespace Damascus.Example.Domain
         public IEnumerable<IDomainEvent> AddGear(Gear gear, int position)
         {
             var newGears = Gears.ToList();
+
+            if (position > newGears.Count)
+            {
+                throw new InvalidOperationException($"Cannot insert gear outside of widget motor. Widget motor currently only has {newGears.Count} gears.");
+            }
+
             newGears.Insert(position, gear);
 
             Gears = ValidateGearUniqueness(newGears);
@@ -32,8 +38,8 @@ namespace Damascus.Example.Domain
 
         public IEnumerable<IDomainEvent> SwapGears(int positionOne, int positionTwo)
         {
-            var invalidPositionOne = positionOne <= 0;
-            var invalidPositionTwo = positionTwo <= 0;
+            var invalidPositionOne = positionOne < 0;
+            var invalidPositionTwo = positionTwo < 0;
 
             if (invalidPositionOne || invalidPositionTwo)
             {
@@ -42,8 +48,8 @@ namespace Damascus.Example.Domain
 
             var gears = Gears.ToArray();
 
-            var outOfBoundsPositionOne = positionOne > gears.Length;
-            var outOfBoundsPositionTwo = positionTwo > gears.Length;
+            var outOfBoundsPositionOne = positionOne >= gears.Length;
+            var outOfBoundsPositionTwo = positionTwo >= gears.Length;
 
             if (outOfBoundsPositionOne || outOfBoundsPositionTwo)
             {
