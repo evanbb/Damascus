@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Contracts = Damascus.Example.Contracts;
-using Domain = Damascus.Example.Domain;
 
 namespace Damascus.Example.Api
 {

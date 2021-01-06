@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Damascus.Core;
 using Damascus.Domain.Abstractions;
@@ -19,6 +21,11 @@ namespace Damascus.Example.Infrastructure
             }
 
             return result;
+        }
+
+        public async Task<IEnumerable<Widget>> SearchAsync()
+        {
+            return _widgets.Select(kvp => kvp.Value);
         }
 
         public void Handle(IDomainEvent theEvent)

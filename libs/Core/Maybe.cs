@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 
 namespace Damascus.Core
 {
     public struct Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>
     {
-        public static readonly Maybe<T> Nothing;
+        public static readonly Maybe<T> Nothing = new Maybe<T>();
 
         private readonly T _value;
         private readonly bool _hasValue;

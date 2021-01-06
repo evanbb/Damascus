@@ -41,5 +41,15 @@ namespace Damascus.Example.Domain
 
             Emit(new DescriptionUpdated(Id, Description));
         }
+
+        public void AddGearToMotor(Gear gear, int position)
+        {
+            Emit(Motor.AddGear(gear, position));
+        }
+
+        public void SwapGears(int positionOne, int positionTwo)
+        {
+            Emit(Motor.SwapGears(positionOne, positionTwo));
+        }
     }
 }

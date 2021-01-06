@@ -33,6 +33,12 @@ namespace Damascus.Example.Api
             return CreatedAtAction(nameof(GetWidget), new { id = newWidget.Id }, newWidget.ToContract());
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetWidgets()
+        {
+            return Ok(_queryRepo.SearchAsync());
+        }
+
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetWidget(Guid id)
         {
@@ -41,6 +47,23 @@ namespace Damascus.Example.Api
             return result.HasValue
                 ? Ok(result.Value)
                 : NotFound();
+        }
+
+        [HttpPost("{id:Guid}/description")]
+        public async Task<IActionResult> UpdateDescription(Guid id, [FromBody]string description)
+        {
+            var result = await _commandRepo.FindAsync(id);
+
+            if (!result.HasValue)
+            {
+                return NotFound();
+            }
+
+            result.Value.UpdateDescription(description);
+
+            await _commandRepo.CommitAsync(result.Value);
+
+            return Accepted();
         }
     }
 }
