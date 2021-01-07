@@ -23,7 +23,7 @@ namespace Damascus.Example.Infrastructure
         {
             var result = _repo.TryGetValue(id, out var widget)
                 ? widget.ToMaybe<Widget>()
-                : Maybe<Widget>.Nothing;
+                : Maybe.Nothing;
 
             return result;
         }

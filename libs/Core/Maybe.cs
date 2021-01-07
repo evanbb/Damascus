@@ -4,8 +4,6 @@ namespace Damascus.Core
 {
     public struct Maybe<T> : IEquatable<Maybe<T>>, IEquatable<T>
     {
-        public static readonly Maybe<T> Nothing = new Maybe<T>();
-
         private readonly T _value;
         private readonly bool _hasValue;
 
@@ -65,6 +63,12 @@ namespace Damascus.Core
 
         public static implicit operator T(Maybe<T> maybe) => maybe.Value;
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
+        public static implicit operator Maybe<T>(Maybe<Unit> _) => Maybe.Nothing;
+    }
+
+    public static class Maybe
+    {
+        public static readonly Maybe<Unit> Nothing = new Maybe<Unit>();
     }
 
     public static class MaybeExtensions

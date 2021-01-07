@@ -6,7 +6,7 @@ using Damascus.Domain.Abstractions;
 
 namespace Damascus.Example.Domain
 {
-    public class Motor : UnitEntity
+    public class Motor
     {
         public Motor(IEnumerable<Gear> gears)
         {

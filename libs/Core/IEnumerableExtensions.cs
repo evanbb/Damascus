@@ -9,6 +9,7 @@ namespace Damascus.Core
         {
             return enumerable is null || !enumerable.Any();
         }
+
         public static bool IsNotEmpty<T>(this IEnumerable<T> enumerable)
         {
             return !enumerable.IsEmpty();

@@ -17,7 +17,7 @@ namespace Damascus.Example.Infrastructure
         {
             if (!_widgets.TryGetValue(id, out var result))
             {
-                return Maybe<Widget>.Nothing;
+                return Maybe.Nothing;
             }
 
             return result;

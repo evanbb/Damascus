@@ -41,15 +41,4 @@ namespace Damascus.Domain.Abstractions
             return a is null || !a.Equals(b);
         }
     }
-
-    // some aggregates have a single instance of an entity as a member
-    // as there is only one instance of this entity inside the aggregate,
-    // it will always have the same identifier
-    public abstract class UnitEntity : Entity<Unit>
-    {
-        public UnitEntity() : base(new Unit())
-        {
-
-        }
-    }
 }
