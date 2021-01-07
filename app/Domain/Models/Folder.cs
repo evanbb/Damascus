@@ -35,7 +35,20 @@ namespace Damascus.Example.Domain
 
         public Maybe<IFolderContent> Find(Predicate<IFolderContent> callback)
         {
-            throw new NotImplementedException();
+            if (callback(this))
+            {
+                return this;
+            }
+
+            foreach(var item in Contents)
+            {
+                if (callback(item))
+                {
+                    return item.ToMaybe<IFolderContent>();
+                }
+            }
+
+            return Maybe.Nothing;
         }
     }
 }
