@@ -19,6 +19,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Bogus" Version="32.0.2" />
   </ItemGroup>
 
   <ItemGroup>

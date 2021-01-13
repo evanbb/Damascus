@@ -1,12 +1,34 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Bogus;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using Xunit;
 
 namespace Damascus.Example.Domain.UnitTests
 {
     public class MutableBookmarkCollectionShould
     {
+        private readonly Randomizer _randomizer = new Randomizer();
+        private readonly Bogus.DataSets.Internet _randomizerNet = new Bogus.DataSets.Internet();
+        private readonly Bogus.DataSets.Date _randomizerDate = new Bogus.DataSets.Date();
+
+        private MutableBookmark _randomBookmark() => MutableBookmark.Rehydrate(
+            Guid.NewGuid(),
+            new Uri(_randomizerNet.Url()),
+            _randomizer.String2(_randomizer.Int(1, 20)),
+            _randomizerDate.RecentOffset(10),
+            _randomizerDate.RecentOffset(1)
+        );
+
+        private MutableFolder _randomFolder(IEnumerable<IFolderContent> contents = null) =>
+            MutableFolder.Rehydrate(
+                Guid.NewGuid(),
+                _randomizer.String2(_randomizer.Int(1, 10)),
+                contents ?? Enumerable.Empty<IFolderContent>()
+            );
+
         #region ctor
 
         [Fact]
@@ -38,11 +60,16 @@ namespace Damascus.Example.Domain.UnitTests
         {
             var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), Enumerable.Empty<IFolderContent>());
 
-            collection.AddBookmark(new Uri("https://google.com"), "Google", Guid.Empty, new Position(1));
+            var bookmark = _randomBookmark();
+
+            collection.AddBookmark(bookmark.Uri, bookmark.Name, Guid.Empty, new Position(1));
 
             var events = collection.FlushEvents().ToList();
 
             events.Single().Should().BeAssignableTo<BookmarkCreated>();
+
+            collection.Contents.Cast<MutableBookmark>().Single().Name.Should().Be(bookmark.Name);
+            collection.Contents.Cast<MutableBookmark>().Single().Uri.Should().Be(bookmark.Uri);
         }
 
         [Fact]
@@ -50,189 +77,181 @@ namespace Damascus.Example.Domain.UnitTests
         {
             var collection = MutableBookmarksCollection.CreateNew();
 
-            Action action = () => collection.AddBookmark(new Uri("https://google.com"), "Google", Guid.NewGuid(), new Position(1));
+            var bookmark = _randomBookmark();
+
+            Action action = () => collection.AddBookmark(bookmark.Uri, bookmark.Name, Guid.NewGuid(), new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void EmitBookmarkDeletedWhenDeletingBookmark()
         {
-            var bookmarkId = Guid.NewGuid();
+            var bookmark = _randomBookmark();
 
             var collection = MutableBookmarksCollection.Rehydrate(
                 Guid.NewGuid(),
-                new[]
-                {
-                    MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                });
+                new[] { bookmark }
+            );
 
-            collection.DeleteBookmark(bookmarkId);
+            collection.DeleteBookmark(bookmark.Id);
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<BookmarkDeleted>();
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void NotEmitBookmarkDeletedWhenDeletingNonexistentBookmark()
         {
-            var bookmarkId = Guid.NewGuid();
+            var bookmark = _randomBookmark();
 
             var collection = MutableBookmarksCollection.Rehydrate(
                 Guid.NewGuid(),
-                new[]
-                {
-                    MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                });
+                new[] { bookmark }
+            );
 
             collection.DeleteBookmark(Guid.NewGuid());
 
             var events = collection.FlushEvents();
 
             events.Should().BeEmpty();
+
+            collection.Contents.Cast<MutableBookmark>().Single().Should().BeEquivalentTo(bookmark);
         }
 
         [Fact]
         public void EmitBookmarkMovedWhenMovingBookmark()
         {
-            var destinationFolderId = Guid.NewGuid();
-            var bookmarkId = Guid.NewGuid();
+            var bookmark = _randomBookmark();
+            var sourceFolder = _randomFolder(new[] { bookmark });
+            var destinationFolder = _randomFolder();
 
             var collection = MutableBookmarksCollection.Rehydrate(
                 Guid.NewGuid(),
-                new[]
-                {
-                    MutableFolder.Rehydrate(Guid.NewGuid(), "Source", new []{
-                        MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                    }),
-                    MutableFolder.Rehydrate(destinationFolderId, "Destination", Enumerable.Empty<IFolderContent>())
-                });
+                new[] { sourceFolder, destinationFolder }
+            );
 
-            collection.MoveBookmark(bookmarkId, destinationFolderId, new Position(1));
+            collection.MoveBookmark(bookmark.Id, destinationFolder.Id, new Position(1));
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<BookmarkMoved>();
-        }
 
-        [Fact]
-        public void NotEmitWhenMovingBookmarkToSameDestination()
-        {
-            var destinationFolderId = Guid.NewGuid();
-            var bookmarkId = Guid.NewGuid();
-
-            var collection = MutableBookmarksCollection.Rehydrate(
-                Guid.NewGuid(),
-                new[]
-                {
-                    MutableFolder.Rehydrate(Guid.NewGuid(), "Source", Enumerable.Empty<IFolderContent>()),
-                    MutableFolder.Rehydrate(destinationFolderId, "Destination", new []{
-                        MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                    })
-                });
-
-            collection.MoveBookmark(bookmarkId, destinationFolderId, new Position(1));
-
-            var events = collection.FlushEvents();
-
-            events.Should().BeEmpty();
+            collection.Contents.Skip(1).Take(1).Cast<MutableFolder>().Single()
+                .Contents.Cast<MutableBookmark>().Single()
+                    .Should().BeEquivalentTo(bookmark);
         }
 
         [Fact]
         public void ThrowWhenMovingNonexistentBookmark()
         {
-            var destinationFolderId = Guid.NewGuid();
-            var bookmarkId = Guid.NewGuid();
+            var bookmark = _randomBookmark();
+            var sourceFolder = _randomFolder(new[] { bookmark });
+            var destinationFolder = _randomFolder();
 
             var collection = MutableBookmarksCollection.Rehydrate(
                 Guid.NewGuid(),
-                new[]
-                {
-                    MutableFolder.Rehydrate(Guid.NewGuid(), "Source", new []{
-                        MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                    }),
-                    MutableFolder.Rehydrate(destinationFolderId, "Destination", Enumerable.Empty<IFolderContent>())
-                });
+                new[] { sourceFolder, destinationFolder }
+            );
 
-            Action action = () => collection.MoveBookmark(Guid.NewGuid(), destinationFolderId, new Position(1));
+            Action action = () => collection.MoveBookmark(Guid.NewGuid(), destinationFolder.Id, new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Folder*not found");
+
+            collection.Contents.Take(1).Cast<MutableFolder>().Single()
+                .Contents.Cast<MutableBookmark>().Single()
+                    .Should().BeEquivalentTo(bookmark);
+
+            collection.Contents.Skip(1).Take(1).Cast<MutableFolder>().Single()
+                .Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void ThrowWhenMovingBookmarkToNonexistentDestination()
         {
-            var destinationFolderId = Guid.NewGuid();
-            var bookmarkId = Guid.NewGuid();
+            var bookmark = _randomBookmark();
+            var sourceFolder = _randomFolder(new[] { bookmark });
+            var destinationFolder = _randomFolder();
 
             var collection = MutableBookmarksCollection.Rehydrate(
                 Guid.NewGuid(),
-                new[]
-                {
-                    MutableFolder.Rehydrate(Guid.NewGuid(), "Source", new []{
-                        MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                    }),
-                    MutableFolder.Rehydrate(destinationFolderId, "Destination", Enumerable.Empty<IFolderContent>())
-                });
+                new[] { sourceFolder, destinationFolder }
+            );
 
-            Action action = () => collection.MoveBookmark(bookmarkId, Guid.NewGuid(), new Position(1));
+            Action action = () => collection.MoveBookmark(bookmark.Id, Guid.NewGuid(), new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Folder*not found");
+
+            collection.Contents.Take(1).Cast<MutableFolder>().Single()
+                .Contents.Cast<MutableBookmark>().Single()
+                    .Should().BeEquivalentTo(bookmark);
+
+            collection.Contents.Skip(1).Take(1).Cast<MutableFolder>().Single()
+                .Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void EmitBookmarkReaddressedWhenReaddressingBookmark()
         {
-            var bookmarkId = Guid.NewGuid();
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-            });
+            var bookmark = _randomBookmark();
+            var newUri = new Uri("https://bing.com");
 
-            collection.ReaddressBookmark(bookmarkId, new Uri("https://bing.com"));
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { bookmark });
+
+            collection.ReaddressBookmark(bookmark.Id, newUri);
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<BookmarkReaddressed>();
+
+            collection.Contents.Cast<MutableBookmark>().Single().Uri.Should().BeEquivalentTo(newUri);
         }
 
         [Fact]
         public void ThrowWhenReaddressingNonexistentBookmark()
         {
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableBookmark.Rehydrate(Guid.NewGuid(), new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-            });
+            var bookmark = _randomBookmark();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { bookmark });
+            var newUri = new Uri("https://bing.com");
 
-            Action action = () => collection.ReaddressBookmark(Guid.NewGuid(), new Uri("https://bing.com"));
+            Action action = () => collection.ReaddressBookmark(Guid.NewGuid(), newUri);
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Cast<MutableBookmark>().Single().Should().BeEquivalentTo(bookmark);
         }
 
         [Fact]
         public void EmitBookmarkRenamedWhenRenamingBookmark()
         {
-            var bookmarkId = Guid.NewGuid();
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableBookmark.Rehydrate(bookmarkId, new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-            });
+            var bookmark = _randomBookmark();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { bookmark });
 
-            collection.RenameBookmark(bookmarkId, "googz");
+            collection.RenameBookmark(bookmark.Id, "brand new");
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<BookmarkRenamed>();
+
+            collection.Contents.Cast<MutableBookmark>().Single().Name.Should().Be("brand new");
         }
 
         [Fact]
         public void ThrowWhenRenamingNonexistentBookmark()
         {
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableBookmark.Rehydrate(Guid.NewGuid(), new Uri("https://google.com"), "Google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-            });
+            var bookmark = _randomBookmark();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { bookmark });
 
-            Action action = () => collection.RenameBookmark(Guid.NewGuid(), "googz");
+            Action action = () => collection.RenameBookmark(Guid.NewGuid(), "brand new");
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Cast<MutableBookmark>().Single().Should().BeEquivalentTo(bookmark);
         }
 
         #endregion
@@ -249,6 +268,8 @@ namespace Damascus.Example.Domain.UnitTests
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<FolderCreated>();
+
+            collection.Contents.Cast<MutableFolder>().Single().Name.Should().Be("Stuff");
         }
 
         [Fact]
@@ -259,53 +280,56 @@ namespace Damascus.Example.Domain.UnitTests
             Action action = () => collection.AddFolder(Guid.NewGuid(), "Stuff", new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void NotEmitWhenDeletingNonexistentFolder()
         {
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(Guid.NewGuid(), "Stuff", Enumerable.Empty<IFolderContent>())
-            });
+            var folder = _randomFolder();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
             collection.DeleteFolder(Guid.NewGuid());
 
             var events = collection.FlushEvents();
 
             events.Should().BeEmpty();
+
+            collection.Contents.Cast<MutableFolder>().Single().Should().BeEquivalentTo(folder);
         }
 
         [Fact]
         public void EmitSingleFolderDeletedWhenDeletingEmptyFolder()
         {
-            var folderId = Guid.NewGuid();
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(folderId, "Stuff", Enumerable.Empty<IFolderContent>())
-            });
+            var folder = _randomFolder();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
-            collection.DeleteFolder(folderId);
+            collection.DeleteFolder(folder.Id);
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<FolderDeleted>();
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void EmitDeletedEventsForEachItemDeletedWhenDeletingFolderWithStuff()
         {
-            var folderId = Guid.NewGuid();
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(folderId, "Stuff", new IFolderContent[]{
-                    MutableFolder.Rehydrate(Guid.NewGuid(), "insider info", Enumerable.Empty<IFolderContent>()),
-                    MutableBookmark.Rehydrate(Guid.NewGuid(), new Uri("https://google.com"), "google", DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)
-                })
-            });
+            var emptyFolder = _randomFolder();
+            var bookmark = _randomBookmark();
+            var folder = _randomFolder(new IFolderContent[] { emptyFolder, bookmark });
 
-            collection.DeleteFolder(folderId);
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
+
+            collection.DeleteFolder(folder.Id);
 
             var events = collection.FlushEvents();
 
             events.Should().HaveCount(3);
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
@@ -316,43 +340,31 @@ namespace Damascus.Example.Domain.UnitTests
             Action action = () => collection.DeleteFolder(Guid.Empty);
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Cannot delete root*");
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void EmitFolderMovedWhenMovingFolder()
         {
-            var folderId = Guid.NewGuid();
+            var innerFolder = _randomFolder();
+            var folder = _randomFolder(new[] { innerFolder });
 
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(Guid.NewGuid(), "Stuff", new [] {
-                    MutableFolder.Rehydrate(folderId, "inside info", Enumerable.Empty<IFolderContent>())
-                })
-            });
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
-            collection.MoveFolder(folderId, Guid.Empty, new Position(1));
+            collection.MoveFolder(innerFolder.Id, Guid.Empty, new Position(1));
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<FolderMoved>();
-        }
 
-        [Fact]
-        public void NotEmitWhenMovingFolderToSameDestination()
-        {
-            var folderId = Guid.NewGuid();
-            var destinationId = Guid.NewGuid();
+            collection.Contents.Should().HaveCount(2);
 
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(destinationId, "Stuff", new [] {
-                    MutableFolder.Rehydrate(folderId, "inside info", Enumerable.Empty<IFolderContent>())
-                })
-            });
+            collection.Contents.Take(1).Cast<MutableFolder>().Single().Contents
+                .Should().BeEmpty();
 
-            collection.MoveFolder(folderId, destinationId, new Position(1));
-
-            var events = collection.FlushEvents();
-
-            events.Should().BeEmpty();
+            collection.Contents.Skip(1).Take(1).Cast<MutableFolder>().Single().Contents
+                .Should().BeEmpty();
         }
 
         [Fact]
@@ -363,59 +375,67 @@ namespace Damascus.Example.Domain.UnitTests
             Action action = () => collection.MoveFolder(Guid.Empty, Guid.NewGuid(), new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Cannot move root*");
+
+            collection.Contents.Should().BeEmpty();
         }
 
         [Fact]
         public void ThrowWhenMovingNonexistentFolder()
         {
-            var destinationId = Guid.NewGuid();
+            var innerFolder = _randomFolder();
+            var folder = _randomFolder(new[] { innerFolder });
 
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(destinationId, "Destination", Enumerable.Empty<IFolderContent>())
-            });
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
-            Action action = () => collection.MoveFolder(Guid.NewGuid(), destinationId, new Position(1));
+            Action action = () => collection.MoveFolder(Guid.NewGuid(), innerFolder.Id, new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Cast<MutableFolder>().Single().Should().BeEquivalentTo(folder);
         }
 
         [Fact]
         public void ThrowWhenMovingFolderToNonexistentDestination()
         {
-            var sourceId = Guid.NewGuid();
+            var innerFolder = _randomFolder();
+            var folder = _randomFolder(new[] { innerFolder });
 
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(sourceId, "Source", Enumerable.Empty<IFolderContent>())
-            });
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
-            Action action = () => collection.MoveFolder(sourceId, Guid.NewGuid(), new Position(1));
+            Action action = () => collection.MoveFolder(innerFolder.Id, Guid.NewGuid(), new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Single().Should().BeEquivalentTo(folder);
         }
 
         [Fact]
         public void EmitFolderRenamedWhenRenamingFolder()
         {
-            var folderId = Guid.NewGuid();
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] {
-                MutableFolder.Rehydrate(folderId, "Stuff", Enumerable.Empty<IFolderContent>())
-            });
+            var folder = _randomFolder();
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
-            collection.RenameFolder(folderId, "Stuff and things");
+            collection.RenameFolder(folder.Id, "Stuff and things");
 
             var events = collection.FlushEvents();
 
             events.Single().Should().BeAssignableTo<FolderRenamed>();
+
+            collection.Contents.Cast<MutableFolder>().Single().Name.Should().Be("Stuff and things");
         }
 
         [Fact]
         public void ThrowWhenRenamingNonexistentFolder()
         {
-            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), Enumerable.Empty<IFolderContent>());
+            var folder = _randomFolder();
+
+            var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), new[] { folder });
 
             Action action = () => collection.RenameFolder(Guid.NewGuid(), "Stuff and things");
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
+
+            collection.Contents.Single().Should().BeEquivalentTo(folder);
         }
 
         #endregion
