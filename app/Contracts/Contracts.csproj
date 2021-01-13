@@ -5,4 +5,9 @@
     <RootNamespace>Damascus.Example.Contracts</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="IO\" />
+    <Folder Include="Events\" />
+    <Folder Include="Common\" />
+  </ItemGroup>
 </Project>

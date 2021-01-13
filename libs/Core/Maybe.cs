@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Damascus.Core
 {
@@ -21,6 +22,11 @@ namespace Damascus.Core
 
         public override bool Equals(object obj)
         {
+            if (obj is Maybe<Unit>)
+            {
+                return !HasValue;
+            }
+
             if (obj is Maybe<T>)
             {
                 return _equals((Maybe<T>)obj);
@@ -56,6 +62,7 @@ namespace Damascus.Core
         public static bool operator !=(Maybe<T> first, Maybe<T> second) => !first.Equals(second);
 
         public static bool operator ==(Maybe<T> first, T second) => first.Equals(second);
+
         public static bool operator !=(Maybe<T> first, T second) => !first.Equals(second);
 
         public static bool operator ==(T first, Maybe<T> second) => second.Equals(first);
@@ -63,16 +70,37 @@ namespace Damascus.Core
 
         public static implicit operator T(Maybe<T> maybe) => maybe.Value;
         public static implicit operator Maybe<T>(T value) => new Maybe<T>(value);
-        public static implicit operator Maybe<T>(Maybe<Unit> _) => Maybe.Nothing;
+        public static implicit operator Maybe<T>(Maybe<Unit> _) => new Maybe<T>();
+
+        public Maybe<K> Cast<K>()
+        {
+            if (!HasValue)
+            {
+                return Maybe.Nothing;
+            }
+
+            var sourceType = typeof(T);
+            var targetType = typeof(K);
+
+            var canCast = sourceType.IsAssignableTo(targetType);
+            if (canCast)
+            {
+                return (K)(object)Value;
+            }
+
+            var canConvert = TypeDescriptor.GetConverter(sourceType).CanConvertTo(targetType);
+            if (canConvert)
+            {
+                var t = (K)System.Convert.ChangeType(Value, targetType);
+                return t;
+            }
+
+            return Maybe.Nothing;
+        }
     }
 
     public static class Maybe
     {
         public static readonly Maybe<Unit> Nothing = new Maybe<Unit>();
-    }
-
-    public static class MaybeExtensions
-    {
-        // todo: put some magic here
     }
 }

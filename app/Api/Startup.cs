@@ -8,7 +8,6 @@ using Damascus.Example.Infrastructure;
 using Damascus.Http;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using Damascus.Domain.Abstractions;
 
 namespace Damascus.Example.Api
@@ -34,23 +33,23 @@ namespace Damascus.Example.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
 
-            services.AddSingleton<IWidgetReadRepository, RamReadRepository>();
-            services.AddSingleton<IWidgetCommandRepository, RamCommandRepository>(
-                svc => new RamCommandRepository(new[]
-                {
-                    svc.GetRequiredService<IWidgetReadRepository>()
-                }));
+            //services.AddSingleton<IWidgetReadRepository, RamReadRepository>();
+            //services.AddSingleton<IWidgetCommandRepository, RamCommandRepository>(
+            //    svc => new RamCommandRepository(new[]
+            //    {
+            //        svc.GetRequiredService<IWidgetReadRepository>()
+            //    }));
             services.AddSingleton<IMessageBus, RamMessageBus>(ctx =>
             {
-                return new RamMessageBus(new Dictionary<string, IEnumerable<Action<Damascus.Domain.Abstractions.IDomainEvent>>>
+                return new RamMessageBus(new Dictionary<string, IEnumerable<Action<IDomainEvent>>>
                 {
-                    {
-                        typeof(WidgetSnapshotEvent).Name,
-                        new Action<IDomainEvent>[]
-                        {
-                            evt => ctx.GetRequiredService<RamReadRepository>().Handle(evt)
-                        }
-                    }
+                    //{
+                    //    typeof(WidgetSnapshotEvent).Name,
+                    //    new Action<IDomainEvent>[]
+                    //    {
+                    //        evt => ctx.GetRequiredService<RamReadRepository>().Handle(evt)
+                    //    }
+                    //}
                 });
             });
         }

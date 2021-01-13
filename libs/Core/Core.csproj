@@ -8,4 +8,28 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Validation" Version="16.8.33" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Extensions\MaybeExtensions\MaybeConcat.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MaybeConcat.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="MaybeExtensions.cs">
+      <DependentUpon>MaybeExtensions.tt</DependentUpon>
+    </Compile>
+    <Compile Update="MaybeAggregate.cs">
+      <DependentUpon>MaybeAggregate.tt</DependentUpon>
+    </Compile>
+    <Compile Update="MaybeConcat.cs">
+      <DependentUpon>MaybeConcat.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Extensions\MaybeExtensions\MaybeConcat.cs">
+      <DependentUpon>MaybeConcat.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Extensions\MaybeExtensions\" />
+  </ItemGroup>
 </Project>

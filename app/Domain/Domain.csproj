@@ -9,4 +9,8 @@
     <ProjectReference Include="..\..\libs\Domain.Abstractions\Domain.Abstractions.csproj" />
     <ProjectReference Include="..\..\libs\Core\Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\MutateInPlace\" />
+    <Folder Include="Events\MutateInPlace\" />
+  </ItemGroup>
 </Project>

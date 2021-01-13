@@ -6,6 +6,8 @@ namespace Damascus.Core
 {
     public static class Assertions
     {
+        #region objects
+
         public static void BetterBe<T>(this T obj, Func<T, bool> predicate, string message = "Failed validation")
         {
             predicate.BetterNotBeNull("Predicate");
@@ -44,7 +46,31 @@ namespace Damascus.Core
             }
         }
 
-        public static void BetterHaveNoNulls<T>([ValidatedNotNull] this IEnumerable<T> elements, string? paramName = "Elements", string? message = "Must not contain null values")
+        #endregion
+
+        #region strings
+
+        public static void BetterNotBeNullOrEmpty(this string obj, string? paramName = "Value", string? message = "Cannot be null or empty")
+        {
+            if (string.IsNullOrEmpty(obj))
+            {
+                throw new ArgumentException(message, paramName);
+            }
+        }
+
+        public static void BetterNotBeNullOrWhiteSpace(this string obj, string? paramName = "Value", string? message = "Cannot be null or empty")
+        {
+            if (string.IsNullOrWhiteSpace(obj))
+            {
+                throw new ArgumentException(message, paramName);
+            }
+        }
+
+        #endregion
+
+        #region ienumerable
+
+        public static void BetterNotHaveNulls<T>([ValidatedNotNull] this IEnumerable<T> elements, string? paramName = "Elements", string? message = "Must not contain null values")
         {
             foreach (var element in elements)
             {
@@ -54,5 +80,7 @@ namespace Damascus.Core
                 }
             }
         }
+
+        #endregion
     }
 }

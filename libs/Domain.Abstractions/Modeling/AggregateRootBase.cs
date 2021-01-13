@@ -26,7 +26,10 @@ namespace Damascus.Domain.Abstractions
 
         protected void Emit(IEnumerable<IDomainEvent> theEvents)
         {
-            _events.AddRange(theEvents);
+            foreach(var e in theEvents)
+            {
+                Emit(e);
+            }
         }
     }
 }
