@@ -1,23 +1,22 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using Damascus.Core;
 using Damascus.Domain.Abstractions;
 
 namespace Damascus.Example.Infrastructure
 {
     public class RamMessageBus : IMessageBus
     {
-        private readonly Dictionary<string, IEnumerable<Action<IDomainEvent>>> _subscriptions =
-            new Dictionary<string, IEnumerable<Action<IDomainEvent>>>();
+        public delegate void MessageHandler(object @event);
+        
+        private readonly Dictionary<string, IEnumerable<MessageHandler>> _subscriptions =
+            new Dictionary<string, IEnumerable<MessageHandler>>();
 
-        public RamMessageBus(Dictionary<string, IEnumerable<Action<IDomainEvent>>> subscriptions)
+        public RamMessageBus(Dictionary<string, IEnumerable<MessageHandler>> subscriptions)
         {
             _subscriptions = subscriptions;
         }
 
-        public void Publish(string topic, IDomainEvent message)
+        public void Publish(string topic, object message)
         {
             if (message is null)
             {

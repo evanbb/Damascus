@@ -5,10 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Damascus.Example.Infrastructure;
-using Damascus.Http;
-using System;
 using System.Collections.Generic;
-using Damascus.Domain.Abstractions;
+using Damascus.Example.Contracts;
+using static Damascus.Example.Infrastructure.RamMessageBus;
 
 namespace Damascus.Example.Api
 {
@@ -26,32 +25,28 @@ namespace Damascus.Example.Api
         {
             services.AddControllers(opts =>
             {
-                opts.Filters.Add<ExceptionMappingFilter>();
+                //opts.Filters.Add<ExceptionMappingFilter>();
+            }).AddJsonOptions(cfg =>
+            {
+                cfg.JsonSerializerOptions.Converters.Add(new BookmarkItemConverter());
             });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
 
-            //services.AddSingleton<IWidgetReadRepository, RamReadRepository>();
-            //services.AddSingleton<IWidgetCommandRepository, RamCommandRepository>(
-            //    svc => new RamCommandRepository(new[]
-            //    {
-            //        svc.GetRequiredService<IWidgetReadRepository>()
-            //    }));
-            services.AddSingleton<IMessageBus, RamMessageBus>(ctx =>
+            services.AddSingleton<IBookmarksQueryRepo, BookmarksCollectionQueryRepo>();
+            services.AddSingleton<IMessageBus>(ctxt => new RamMessageBus(new Dictionary<string, IEnumerable<MessageHandler>>
             {
-                return new RamMessageBus(new Dictionary<string, IEnumerable<Action<IDomainEvent>>>
                 {
-                    //{
-                    //    typeof(WidgetSnapshotEvent).Name,
-                    //    new Action<IDomainEvent>[]
-                    //    {
-                    //        evt => ctx.GetRequiredService<RamReadRepository>().Handle(evt)
-                    //    }
-                    //}
-                });
-            });
+                    typeof(BookmarksCollection).FullName,
+                    new MessageHandler[]
+                    {
+                        e => ctxt.GetRequiredService<IBookmarksQueryRepo>().Handle(e)
+                    }
+                }
+            }));
+            services.AddSingleton<IMutableBookmarksCommandRepo, MutableBookmarksCommandRepo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +59,7 @@ namespace Damascus.Example.Api
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Api v1"));
             }
 
-            app.UseExceptionStatusMap();
+            //app.UseExceptionStatusMap();
 
             app.UseHttpsRedirection();
 

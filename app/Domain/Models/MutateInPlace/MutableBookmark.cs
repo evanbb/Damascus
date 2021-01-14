@@ -87,13 +87,12 @@ namespace Damascus.Example.Domain
             yield return new BookmarkReaddressed(Id, uri);
         }
 
-        public IEnumerable<IDomainEvent> OnMoved(MutableFolder sourceFolder, MutableFolder destinationFolder, Position position)
+        public IEnumerable<IDomainEvent> OnMoved(MutableFolder destinationFolder, Position position)
         {
-            sourceFolder.BetterNotBeNull(nameof(sourceFolder));
             destinationFolder.BetterNotBeNull(nameof(destinationFolder));
             position.BetterNotBeNull(nameof(position));
 
-            yield return new BookmarkMoved(sourceFolder.Id, destinationFolder.Id, position);
+            yield return new BookmarkMoved(Id, destinationFolder.Id, position);
         }
 
         public IEnumerable<IDomainEvent> OnAdded(MutableFolder destinationFolder, Position position)

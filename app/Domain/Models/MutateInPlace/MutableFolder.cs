@@ -18,6 +18,7 @@ namespace Damascus.Example.Domain
             name.BetterNotBeNull("Folder name");
 
             Contents = contents;
+            Name = name;
         }
 
         public static MutableFolder CreateRoot(IEnumerable<IFolderContent> contents)
@@ -36,6 +37,7 @@ namespace Damascus.Example.Domain
         }
 
         public IEnumerable<IFolderContent> Contents { get; private set; }
+        public string Name { get; private set; }
 
         public IEnumerable<IDomainEvent> Add(IFolderContent item, Position position)
         {
@@ -101,11 +103,6 @@ namespace Damascus.Example.Domain
             destination.BetterNotBeNull(nameof(destination));
             position.BetterNotBeNull(nameof(position));
 
-            if (destination.Id == Id)
-            {
-                yield break;
-            }
-
             var item = Contents.SingleOrDefault(c => c.Id == itemId);
 
             if (item.IsNull())
@@ -117,7 +114,7 @@ namespace Damascus.Example.Domain
 
             Contents = Contents.Where(c => c.Id != itemId).ToList();
 
-            foreach (var e in item.OnMoved(this, destination, position))
+            foreach (var e in item.OnMoved(destination, position))
             {
                 yield return e;
             }
@@ -126,6 +123,8 @@ namespace Damascus.Example.Domain
         public IEnumerable<IDomainEvent> Rename(string newName)
         {
             newName.BetterNotBeNull("Folder name");
+
+            Name = newName;
 
             yield return new FolderRenamed(Id, newName);
         }
@@ -143,16 +142,14 @@ namespace Damascus.Example.Domain
             yield return new FolderDeleted(Id);
         }
 
-        public IEnumerable<IDomainEvent> OnMoved(MutableFolder sourceFolder, MutableFolder destinationFolder, Position position)
+        public IEnumerable<IDomainEvent> OnMoved(MutableFolder destinationFolder, Position position)
         {
-            sourceFolder.BetterNotBeNull(nameof(sourceFolder));
             destinationFolder.BetterNotBeNull(nameof(destinationFolder));
             position.BetterNotBeNull(nameof(position));
 
-            sourceFolder.Id.BetterNotBe(Id, "Cannot extract folder from itself");
             destinationFolder.Id.BetterNotBe(Id, "Cannot insert folder into itself");
 
-            yield return new FolderMoved(sourceFolder.Id, destinationFolder.Id, position);
+            yield return new FolderMoved(Id, destinationFolder.Id, position);
         }
 
         public IEnumerable<IDomainEvent> OnAdded(MutableFolder destinationFolder, Position position)

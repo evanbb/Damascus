@@ -6,17 +6,17 @@ namespace Damascus.Example.Domain
 {
     public class FolderMoved : IDomainEvent
     {
-        public FolderMoved(Guid sourceFolderId, Guid destinationFolderId, Position position)
+        public FolderMoved(Guid folderId, Guid destinationFolderId, Position position)
         {
-            sourceFolderId.BetterNotBe(Guid.Empty, "Cannot move root folder");
+            folderId.BetterNotBe(Guid.Empty, "Cannot move root folder");
             position.BetterNotBeNull(nameof(position));
 
-            SourceFolderId = sourceFolderId;
+            FolderId = folderId;
             DestinationFolderId = destinationFolderId;
             Position = position;
         }
 
-        public Guid SourceFolderId { get; }
+        public Guid FolderId { get; }
         public Guid DestinationFolderId { get; }
         public Position Position { get; }
     }

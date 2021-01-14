@@ -25,6 +25,8 @@ namespace Damascus.Example.Domain
 
         private MutableFolder RootFolder { get; }
 
+        public IEnumerable<IFolderContent> Contents => RootFolder.Contents;
+
         public static MutableBookmarksCollection CreateNew()
         {
             var id = Guid.NewGuid();
@@ -45,11 +47,11 @@ namespace Damascus.Example.Domain
 
         #region bookmark operations
 
-        public void AddBookmark(Uri uri, string name, Guid destinationFolder, Position position)
+        public void AddBookmark(MutableBookmark bookmark, Guid destinationFolder, Position position)
         {
-            var folder = FindFolder(destinationFolder);
+            bookmark.BetterNotBeNull(nameof(bookmark));
 
-            var bookmark = MutableBookmark.CreateNew(uri, name);
+            var folder = FindFolder(destinationFolder);
 
             Emit(folder.Add(bookmark, position));
         }
@@ -98,11 +100,18 @@ namespace Damascus.Example.Domain
 
         #region folder
 
-        public void AddFolder(Guid parentFolderId, string name, Position position)
+        public void AddFolder(Guid parentFolderId, MutableFolder folderToAdd, Position position)
         {
             var folder = FindFolder(parentFolderId);
 
-            Emit(folder.Add(MutableFolder.CreateNew(name), position));
+            var existingFolder = RootFolder.Find<MutableFolder>(f => f is MutableFolder && f.Id == folderToAdd.Id);
+
+            if (existingFolder.HasValue)
+            {
+                throw new InvalidOperationException("Cannot add an already existing folder");
+            }
+
+            Emit(folder.Add(folderToAdd, position));
         }
 
         public void DeleteFolder(Guid folderId)

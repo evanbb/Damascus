@@ -6,17 +6,17 @@ namespace Damascus.Example.Domain
 {
     public class BookmarkMoved : IDomainEvent
     {
-        public BookmarkMoved(Guid sourceFolderId, Guid destinationFolderId, Position position)
+        public BookmarkMoved(Guid bookmarkId, Guid destinationFolderId, Position position)
         {
-            sourceFolderId.BetterNotBe(Guid.Empty, "Cannot move root folder");
+            bookmarkId.BetterNotBe(Guid.Empty, "Bookmarks should have a non-empty identifer");
             position.BetterNotBeNull(nameof(position));
 
-            SourceFolderId = sourceFolderId;
+            BookmarkId = bookmarkId;
             DestinationFolderId = destinationFolderId;
             Position = position;
         }
 
-        public Guid SourceFolderId { get; }
+        public Guid BookmarkId { get; }
         public Guid DestinationFolderId { get; }
         public Position Position { get; }
     }

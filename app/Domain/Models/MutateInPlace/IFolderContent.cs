@@ -10,7 +10,7 @@ namespace Damascus.Example.Domain
         Guid Id { get; }
         Maybe<T> Find<T>(Predicate<T> callback)
             where T : IFolderContent;
-        IEnumerable<IDomainEvent> OnMoved(MutableFolder sourceFolder, MutableFolder destinationFolder, Position position);
+        IEnumerable<IDomainEvent> OnMoved(MutableFolder destinationFolder, Position position);
         IEnumerable<IDomainEvent> OnAdded(MutableFolder destinationFolder, Position position);
         IEnumerable<IDomainEvent> OnDeleted();
     }
