@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Damascus.Example.Infrastructure</RootNamespace>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Damascus.Example.Contracts\Damascus.Example.Contracts.csproj" />
+    <ProjectReference Include="..\Damascus.Example.Domain\Damascus.Example.Domain.csproj" />
+    <ProjectReference Include="..\..\libs\Damascus.Persistence.Abstractions\Damascus.Persistence.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+</Project>

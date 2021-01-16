@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Damascus.Testing</RootNamespace>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
+    <PackageVersion>0.0.1</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
 </Project>

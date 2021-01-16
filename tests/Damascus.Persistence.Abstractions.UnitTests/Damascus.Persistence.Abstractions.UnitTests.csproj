@@ -5,6 +5,9 @@
 
     <IsPackable>false</IsPackable>
     <RootNamespace>Damascus.Persistence.Abstractions.UnitTests</RootNamespace>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
+    <PackageVersion>0.0.1</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\libs\Persistence.Abstractions\Persistence.Abstractions.csproj" />
+    <ProjectReference Include="..\..\libs\Damascus.Persistence.Abstractions\Damascus.Persistence.Abstractions.csproj" />
   </ItemGroup>
 </Project>

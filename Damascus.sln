@@ -9,36 +9,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{43C968A4-D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1C314F23-C838-4905-B7EF-C3678DB120A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "app\Api\Api.csproj", "{49FE88B3-97AC-40FE-8690-D6DC2C898FD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "app\Damascus.Example.Api\Damascus.Example.Api.csproj", "{49FE88B3-97AC-40FE-8690-D6DC2C898FD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "app\Contracts\Contracts.csproj", "{B3DD24A6-253D-4D97-8211-C1696D2097BD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "app\Damascus.Example.Contracts\Damascus.Example.Contracts.csproj", "{B3DD24A6-253D-4D97-8211-C1696D2097BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "libs\Core\Core.csproj", "{738240CD-8651-47BE-AE42-E3FC429B8FAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Core", "libs\Damascus.Core\Damascus.Core.csproj", "{738240CD-8651-47BE-AE42-E3FC429B8FAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Abstractions", "libs\Domain.Abstractions\Domain.Abstractions.csproj", "{2FECED86-0535-4F95-902D-53DE2027BE3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Domain.Abstractions", "libs\Damascus.Domain.Abstractions\Damascus.Domain.Abstractions.csproj", "{2FECED86-0535-4F95-902D-53DE2027BE3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.Abstractions", "libs\Persistence.Abstractions\Persistence.Abstractions.csproj", "{64FF6B0B-1C22-4958-8359-0B35D67C0974}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Persistence.Abstractions", "libs\Damascus.Persistence.Abstractions\Damascus.Persistence.Abstractions.csproj", "{64FF6B0B-1C22-4958-8359-0B35D67C0974}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "app\Domain\Domain.csproj", "{11B64A9F-5267-4A1D-93E6-7C91E5F3A101}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "app\Damascus.Example.Domain\Damascus.Example.Domain.csproj", "{11B64A9F-5267-4A1D-93E6-7C91E5F3A101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "app\Infrastructure\Infrastructure.csproj", "{EDDF6069-4023-4A12-A499-5F27A6D7AB48}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "app\Damascus.Example.Infrastructure\Damascus.Example.Infrastructure.csproj", "{EDDF6069-4023-4A12-A499-5F27A6D7AB48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.UnitTests", "tests\Core.UnitTests\Core.UnitTests.csproj", "{8143F8BB-50F8-44D0-B6F9-CABBAFF1F792}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Core.UnitTests", "tests\Damascus.Core.UnitTests\Damascus.Core.UnitTests.csproj", "{8143F8BB-50F8-44D0-B6F9-CABBAFF1F792}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Abstractions.UnitTests", "tests\Domain.Abstractions.UnitTests\Domain.Abstractions.UnitTests.csproj", "{2E380841-2275-4A98-9F8A-21D9A800E99D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Domain.Abstractions.UnitTests", "tests\Damascus.Domain.Abstractions.UnitTests\Damascus.Domain.Abstractions.UnitTests.csproj", "{2E380841-2275-4A98-9F8A-21D9A800E99D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence.Abstractions.UnitTests", "tests\Persistence.Abstractions\Persistence.Abstractions.UnitTests.csproj", "{10E258F2-0173-402F-977E-4369C284CB9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Persistence.Abstractions.UnitTests", "tests\Damascus.Persistence.Abstractions.UnitTests\Damascus.Persistence.Abstractions.UnitTests.csproj", "{10E258F2-0173-402F-977E-4369C284CB9D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20550EF4-1AD9-4919-BCC8-26E8E7EE2428}"
 	ProjectSection(SolutionItems) = preProject
 		Damascus.sln = Damascus.sln
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Http", "libs\Http\Http.csproj", "{EE2214D3-47E9-457A-82C7-09C84F11AE86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Http", "libs\Damascus.Http\Damascus.Http.csproj", "{EE2214D3-47E9-457A-82C7-09C84F11AE86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "libs\Testing\Testing.csproj", "{C39D0896-8F57-493A-8A67-6E3DF014B377}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Testing", "libs\Damascus.Testing\Damascus.Testing.csproj", "{C39D0896-8F57-493A-8A67-6E3DF014B377}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example.Domain.UnitTests", "tests\Example.Domain.UnitTests\Example.Domain.UnitTests.csproj", "{C1A6A52B-9174-4C12-8AF4-0C574B4027EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Damascus.Example.Domain.UnitTests", "tests\Damascus.Example.Domain.UnitTests\Damascus.Example.Domain.UnitTests.csproj", "{C1A6A52B-9174-4C12-8AF4-0C574B4027EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -119,5 +119,8 @@ Global
 		{EE2214D3-47E9-457A-82C7-09C84F11AE86} = {43C968A4-DE96-4713-A842-216634B1CE9B}
 		{C39D0896-8F57-493A-8A67-6E3DF014B377} = {43C968A4-DE96-4713-A842-216634B1CE9B}
 		{C1A6A52B-9174-4C12-8AF4-0C574B4027EC} = {1C314F23-C838-4905-B7EF-C3678DB120A5}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 0.0.1
 	EndGlobalSection
 EndGlobal

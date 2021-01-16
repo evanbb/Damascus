@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Damascus.Example.Api</RootNamespace>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Api' " />
@@ -13,19 +14,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Contracts\Contracts.csproj">
+    <ProjectReference Include="..\Damascus.Example.Contracts\Damascus.Example.Contracts.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\Domain\Domain.csproj">
+    <ProjectReference Include="..\Damascus.Example.Domain\Damascus.Example.Domain.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+    <ProjectReference Include="..\Damascus.Example.Infrastructure\Damascus.Example.Infrastructure.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\..\libs\Core\Core.csproj">
+    <ProjectReference Include="..\..\libs\Damascus.Core\Damascus.Core.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
-    <ProjectReference Include="..\..\libs\Http\Http.csproj">
+    <ProjectReference Include="..\..\libs\Damascus.Http\Damascus.Http.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>

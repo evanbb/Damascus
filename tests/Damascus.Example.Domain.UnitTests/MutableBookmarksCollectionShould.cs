@@ -62,7 +62,7 @@ namespace Damascus.Example.Domain.UnitTests
 
             var bookmark = _randomBookmark();
 
-            collection.AddBookmark(bookmark.Uri, bookmark.Name, Guid.Empty, new Position(1));
+            collection.AddBookmark(bookmark, Guid.Empty, new Position(1));
 
             var events = collection.FlushEvents().ToList();
 
@@ -79,7 +79,7 @@ namespace Damascus.Example.Domain.UnitTests
 
             var bookmark = _randomBookmark();
 
-            Action action = () => collection.AddBookmark(bookmark.Uri, bookmark.Name, Guid.NewGuid(), new Position(1));
+            Action action = () => collection.AddBookmark(bookmark, Guid.NewGuid(), new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
 
@@ -263,7 +263,9 @@ namespace Damascus.Example.Domain.UnitTests
         {
             var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), Enumerable.Empty<IFolderContent>());
 
-            collection.AddFolder(Guid.Empty, "Stuff", new Position(1));
+            var folder = MutableFolder.CreateNew("Stuff");
+
+            collection.AddFolder(Guid.Empty, folder, new Position(1));
 
             var events = collection.FlushEvents();
 
@@ -277,7 +279,9 @@ namespace Damascus.Example.Domain.UnitTests
         {
             var collection = MutableBookmarksCollection.Rehydrate(Guid.NewGuid(), Enumerable.Empty<IFolderContent>());
 
-            Action action = () => collection.AddFolder(Guid.NewGuid(), "Stuff", new Position(1));
+            var folder = MutableFolder.CreateNew("Stuff");
+
+            Action action = () => collection.AddFolder(Guid.NewGuid(), folder, new Position(1));
 
             action.Should().ThrowExactly<InvalidOperationException>().WithMessage("*not found");
 

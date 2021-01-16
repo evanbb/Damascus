@@ -3,10 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Damascus.Http</RootNamespace>
+    <ReleaseVersion>0.0.1</ReleaseVersion>
+    <PackageVersion>0.0.1</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Damascus.Core\Damascus.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="2.2.0" />
